@@ -52,14 +52,20 @@ const applyClub = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         if (!club) {
             return res.status(404).json({ message: 'Club not found' });
         }
-        if (((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) !== "staff") {
-            const updatedUser = yield User_1.default.findOneAndUpdate({ _id: (_d = req.user) === null || _d === void 0 ? void 0 : _d._id }, { $push: { clubs: club.name } }, { new: true });
-            if (!updatedUser) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            club.strength += 1;
-            yield club.save();
+        if (((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) == "staff") {
+            return res.status(405).json({ message: "Staff cannot join any club" });
         }
+        const userToBeUpdated = yield User_1.default.findById((_d = req.user) === null || _d === void 0 ? void 0 : _d._id);
+        if (!userToBeUpdated) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (userToBeUpdated.clubs.includes(club.name)) {
+            return res.status(404).json({ message: 'User is already in the club' });
+        }
+        club.strength += 1;
+        yield club.save();
+        userToBeUpdated.clubs.push(club.name);
+        yield userToBeUpdated.save();
         res.json({ message: 'Club applied successfully' });
     }
     catch (error) {

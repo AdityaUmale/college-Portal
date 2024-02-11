@@ -3,7 +3,7 @@ import Club from '../Models/Club';
 import { ClubSchema } from '../Schema/ClubSchema';
 import User from '../Models/User';
 interface AuthenticatedRequest extends Request {
-    user?: { _id: string; role: string, email: string };
+    user?: { _id: string; role: string, email: string, clubs: [string] };
 }
 
 export const getAllClubs = async (req: Request, res: Response, next: Function) => {
@@ -37,19 +37,20 @@ export const applyClub = async (req: AuthenticatedRequest, res: Response, next: 
         if (!club) {
             return res.status(404).json({ message: 'Club not found' });
         }
-        if (req.user?.role !== "staff") {
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: req.user?._id },
-                { $push: { clubs: club.name } },
-                { new: true }
-            );
-
-            if (!updatedUser) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            club.strength += 1;
-            await club.save();
+        if (req.user?.role == "staff") {
+            return res.status(405).json({ message: "Staff cannot join any club" })
         }
+        const userToBeUpdated = await User.findById(req.user?._id);
+        if (!userToBeUpdated) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (userToBeUpdated.clubs.includes(club.name!)) {
+            return res.status(404).json({ message: 'User is already in the club' });
+        }
+        club.strength += 1;
+        await club.save();
+        userToBeUpdated.clubs.push(club.name!);
+        await userToBeUpdated.save();
 
         res.json({ message: 'Club applied successfully' });
     } catch (error) {
