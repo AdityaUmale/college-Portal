@@ -4,11 +4,19 @@ import { authRouter } from './Routes/UserAuth'
 import connectToDb from './Database/connectToDb'
 import { App as appConfig } from './Config/config'
 import cors from "cors";
+import { eventRouter } from './Routes/EventRoutes'
+import { announcementRouter } from './Routes/AnnouncementRoutes'
+import { isLoggedIn } from './middlewares/isLoggedIn'
+import { ClubRouter } from './Routes/ClubRouter'
 const app = express()
 app.use(cors())
 app.use(bodyparser.json())
 
 app.use('/api/v1/auth', authRouter)
+app.use(isLoggedIn)
+app.use('/api/v1/event', eventRouter)
+app.use('/api/v1/announcement', announcementRouter)
+app.use('/api/v1/club', ClubRouter)
 
 app.use(
   (

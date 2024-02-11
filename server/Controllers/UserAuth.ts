@@ -13,7 +13,7 @@ const login = async (
     next: express.NextFunction
 ) => {
     try {
-    
+
         const { email, password } = req.body;
         const userData = { email, password };
         const validationResult = loginSchema.safeParse(userData);
@@ -36,8 +36,8 @@ const login = async (
                     return res.status(500).json({ error: 'Internal server error' });
                 }
                 if (result) {
-                    const token = jwt.sign({ email }, JwtConfig.key);
-                    return res.status(200).json({ token });
+                    const token = jwt.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role }, JwtConfig.key);
+                    return res.status(200).json({ Authorization: "Bearer " + token });
                 } else {
                     return res.status(401).json({ error: 'Invalid password' });
                 }
@@ -54,10 +54,10 @@ const register = async (
     res: express.Response,
     next: express.NextFunction
 ) => {
-    const { email, name, password } = req.body;
+    const { email, name, password, role, clubs } = req.body;
     const user = await User.findOne({ email: email });
     if (user) {
-        return  res.status(409).json({ message: "User with this email already present" })
+        return res.status(409).json({ message: "User with this email already present" })
     }
     let hashedPass = await new Promise((resolve, reject) => {
         bcrypt.genSalt(saltRounds, function (err, salt) {
@@ -79,11 +79,13 @@ const register = async (
     User.create({
         name,
         email,
-        password: hashedPass
+        password: hashedPass,
+        role,
+        clubs
     }).then((user: any) => {
         return res.status(200).json({ message: "User signup successfull" })
     }).catch((err) => {
-      next(err)
+        next(err)
     })
 
 
