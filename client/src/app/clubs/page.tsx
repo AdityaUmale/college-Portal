@@ -2,7 +2,7 @@
 
 import ListWrapper from "@/components/ListWrapper";
 
-export default function Events() {
+export default function Clubs() {
   return (
     <ListWrapper>
       <ul>
