@@ -1,21 +1,22 @@
 import { userState } from "@/app/recoilContextProvider";
 import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
+import { Button } from "@/components/ui/button";
 
-interface EventComponentProps {
+interface ClubComponentProps {
   name: string;
   description: string;
-  link: string;
+  strength: number;
   createdBy: string;
-  username: string;
+  clubHead: string;
 }
 
-const EventComponent: React.FC<EventComponentProps> = ({
+const ClubComponent: React.FC<ClubComponentProps> = ({
   name,
   description,
-  link,
+  strength,
   createdBy,
-  username,
+  clubHead,
 }) => {
   const [showMore, setShowMore] = useState(false);
 
@@ -24,11 +25,12 @@ const EventComponent: React.FC<EventComponentProps> = ({
   };
   const user = useRecoilValue(userState);
   const userId = user._id;
+  const userRole = user.role;
 
   if (createdBy === userId) {
     return (
       <div className="border hover:border-gray-500 border-gray-300 bg-gray-700 text-white hover:bg-gray-600 rounded-lg p-4 mb-4">
-        <h2 className="text-2xl font-semibold mb-2">{name} (Your Event)</h2>
+        <h2 className="text-2xl font-semibold mb-2">{name} (Your Club)</h2>
         <div
           className={`mb-2 ${showMore ? "" : "line-clamp-3"} whitespace-normal`}
         >
@@ -42,11 +44,14 @@ const EventComponent: React.FC<EventComponentProps> = ({
             {showMore ? "Show less" : "Show more"}
           </button>
         )}
+        <div>
+          <div>Strength:{strength}</div>
+        </div>
       </div>
     );
   }
   return (
-    <div className="border hover:border-gray-500 hover:bg-gray-200 border-gray-300 flex flex-col items-start rounded-lg p-4 mb-4">
+    <div className="border hover:border-gray-500 hover:bg-gray-200 gap-2 border-gray-300 flex flex-col items-start rounded-lg p-4 mb-4">
       <h2 className="text-lg font-semibold mb-2">{name}</h2>
       <div
         className={`mb-2 ${showMore ? "" : "line-clamp-3"} whitespace-normal`}
@@ -61,19 +66,13 @@ const EventComponent: React.FC<EventComponentProps> = ({
           {showMore ? "Show less" : "Show more"}
         </button>
       )}
-      <div className="w-full flex justify-between items-center">
-        <a
-          target="_blank"
-          href={link}
-          className="text-blue-700 font-semibold underline"
-        >
-          Link
-        </a>
-
-        <div>Created by: {username}</div>
-      </div>
+      <div className="flex w-full justify-between items-center">
+        <div>Strength:{strength}</div>
+        <div>Club Head: {clubHead}</div>
+      </div>{" "}
+      {userRole === "user" && <Button variant="default">Apply</Button>}
     </div>
   );
 };
 
-export default EventComponent;
+export default ClubComponent;

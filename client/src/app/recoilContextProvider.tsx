@@ -9,7 +9,7 @@ export const userState = atom({
     name: "Shoaib Akhtar",
     email: "shoaib@gmail.com",
     description: "Description 1",
-    link: "https://example.com/event1",
+    role: "staff",
   },
 });
 

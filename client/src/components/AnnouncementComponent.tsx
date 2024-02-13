@@ -2,18 +2,16 @@ import { userState } from "@/app/recoilContextProvider";
 import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 
-interface EventComponentProps {
+interface AnnouncementComponentProps {
   name: string;
   description: string;
-  link: string;
   createdBy: string;
   username: string;
 }
 
-const EventComponent: React.FC<EventComponentProps> = ({
+const AnnouncementComponent: React.FC<AnnouncementComponentProps> = ({
   name,
   description,
-  link,
   createdBy,
   username,
 }) => {
@@ -28,7 +26,9 @@ const EventComponent: React.FC<EventComponentProps> = ({
   if (createdBy === userId) {
     return (
       <div className="border hover:border-gray-500 border-gray-300 bg-gray-700 text-white hover:bg-gray-600 rounded-lg p-4 mb-4">
-        <h2 className="text-2xl font-semibold mb-2">{name} (Your Event)</h2>
+        <h2 className="text-2xl font-semibold mb-2">
+          {name} (Your Announcement)
+        </h2>
         <div
           className={`mb-2 ${showMore ? "" : "line-clamp-3"} whitespace-normal`}
         >
@@ -61,19 +61,9 @@ const EventComponent: React.FC<EventComponentProps> = ({
           {showMore ? "Show less" : "Show more"}
         </button>
       )}
-      <div className="w-full flex justify-between items-center">
-        <a
-          target="_blank"
-          href={link}
-          className="text-blue-700 font-semibold underline"
-        >
-          Link
-        </a>
-
-        <div>Created by: {username}</div>
-      </div>
+      <div>Created By: {username}</div>
     </div>
   );
 };
 
-export default EventComponent;
+export default AnnouncementComponent;
