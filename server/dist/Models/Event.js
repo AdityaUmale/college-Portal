@@ -28,6 +28,8 @@ const eventSchema = new mongoose_1.Schema({
     title: String,
     description: String,
     link: String,
+    createdBy: String,
+    username: String,
 });
 const Event = mongoose_1.default.model('Event', eventSchema);
 exports.default = Event;

@@ -6,7 +6,8 @@ const announcementSchema = new Schema({
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    username: String,
 });
 
 const Announcement = mongoose.model('Announcement', announcementSchema);

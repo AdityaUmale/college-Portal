@@ -43,9 +43,12 @@ const deleteEventById = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.deleteEventById = deleteEventById;
 const createEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const validatedData = EventSchema_1.EventSchema.parse(req.body);
-        const newEvent = yield Event_1.default.create(validatedData);
+        const username = (_a = req.user) === null || _a === void 0 ? void 0 : _a.name;
+        const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b._id;
+        const newEvent = yield Event_1.default.create(Object.assign(Object.assign({}, validatedData), { createdBy: userId, username: username }));
         res.status(201).json({ message: 'Event created successfully', event: newEvent });
     }
     catch (error) {

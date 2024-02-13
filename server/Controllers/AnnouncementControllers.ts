@@ -3,7 +3,7 @@ import Announcement from '../Models/Announcement';
 import { AnnouncementSchema } from '../Schema/AnnouncementSchema';
 
 interface AuthenticatedRequest extends Request {
-    user?: { _id: string; role: string, email: string };
+    user?: { _id: string; role: string, email: string, name: string };
 }
 
 export const getAllAnnouncements = async (req: Request, res: Response, next: Function) => {
@@ -34,7 +34,7 @@ export const deleteAnnouncementById = async (req: Request, res: Response, next: 
 export const createAnnouncement = async (req: AuthenticatedRequest, res: Response, next: Function) => {
     try {
         const validatedData = AnnouncementSchema.parse(req.body);
-        const newAnnouncement = await Announcement.create({ ...validatedData, createdBy: req.user?._id });
+        const newAnnouncement = await Announcement.create({ ...validatedData, createdBy: req.user?._id, username: req.user?.name });
         res.status(201).json({ message: 'Announcement created successfully', announcement: newAnnouncement });
     } catch (error) {
         next(error);

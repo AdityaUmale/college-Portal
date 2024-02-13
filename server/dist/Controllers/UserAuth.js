@@ -38,7 +38,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
                     return res.status(500).json({ error: 'Internal server error' });
                 }
                 if (result) {
-                    const token = jsonwebtoken_1.default.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role }, config_1.JwtConfig.key);
+                    const token = jsonwebtoken_1.default.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role, name: foundUser.name }, config_1.JwtConfig.key);
                     return res.status(200).json({ Authorization: "Bearer " + token });
                 }
                 else {

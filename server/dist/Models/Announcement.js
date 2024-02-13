@@ -30,7 +30,8 @@ const announcementSchema = new mongoose_1.Schema({
     createdBy: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    username: String,
 });
 const Announcement = mongoose_1.default.model('Announcement', announcementSchema);
 exports.default = Announcement;

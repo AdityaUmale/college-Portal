@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { JwtConfig } from '../Config/config';
 
 interface AuthenticatedRequest extends Request {
-    user?: { _id: string; role: string, email: string };
+    user?: { _id: string; role: string, email: string, name: string };
 }
 
 export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export const isLoggedIn = async (req: AuthenticatedRequest, res: Response, next:
             return res.status(401).json({ message: "Authentication failed: Invalid token" });
         }
         const { email, _id, role } = decodedToken;
-        req.user = { _id, role, email };
+        req.user = { _id, role, email, name: decodedToken.name };
 
         next();
     } catch (error) {

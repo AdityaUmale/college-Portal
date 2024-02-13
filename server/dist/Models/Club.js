@@ -34,7 +34,8 @@ const clubSchema = new mongoose_1.Schema({
     clubHead: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    username: String,
 });
 const Club = mongoose_1.default.model('Club', clubSchema);
 exports.default = Club;

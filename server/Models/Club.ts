@@ -10,7 +10,8 @@ const clubSchema = new Schema({
     clubHead: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    username: String,
 });
 
 const Club = mongoose.model('Club', clubSchema);

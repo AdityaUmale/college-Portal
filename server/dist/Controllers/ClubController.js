@@ -30,11 +30,11 @@ const getAllClubs = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.getAllClubs = getAllClubs;
 const createClub = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     try {
         const validatedData = ClubSchema_1.ClubSchema.parse(req.body);
-        const newClub = yield Club_1.default.create(Object.assign(Object.assign({}, validatedData), { clubHead: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id }));
-        if (((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) !== "staff") {
+        const newClub = yield Club_1.default.create(Object.assign(Object.assign({}, validatedData), { clubHead: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id, username: (_b = req.user) === null || _b === void 0 ? void 0 : _b.name }));
+        if (((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) !== "staff") {
             return res.status(403).json({ message: 'You are not authorized to create club' });
         }
         res.status(201).json({ message: 'Club created successfully', club: newClub });
@@ -45,17 +45,17 @@ const createClub = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createClub = createClub;
 const applyClub = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _d, _e;
     try {
         const clubId = req.params.id;
         const club = yield Club_1.default.findById(clubId);
         if (!club) {
             return res.status(404).json({ message: 'Club not found' });
         }
-        if (((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) == "staff") {
+        if (((_d = req.user) === null || _d === void 0 ? void 0 : _d.role) == "staff") {
             return res.status(405).json({ message: "Staff cannot join any club" });
         }
-        const userToBeUpdated = yield User_1.default.findById((_d = req.user) === null || _d === void 0 ? void 0 : _d._id);
+        const userToBeUpdated = yield User_1.default.findById((_e = req.user) === null || _e === void 0 ? void 0 : _e._id);
         if (!userToBeUpdated) {
             return res.status(404).json({ message: 'User not found' });
         }

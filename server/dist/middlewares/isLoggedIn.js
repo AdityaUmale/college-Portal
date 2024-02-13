@@ -27,7 +27,7 @@ const isLoggedIn = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             return res.status(401).json({ message: "Authentication failed: Invalid token" });
         }
         const { email, _id, role } = decodedToken;
-        req.user = { _id, role, email };
+        req.user = { _id, role, email, name: decodedToken.name };
         next();
     }
     catch (error) {

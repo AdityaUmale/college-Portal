@@ -43,10 +43,10 @@ const deleteAnnouncementById = (req, res, next) => __awaiter(void 0, void 0, voi
 });
 exports.deleteAnnouncementById = deleteAnnouncementById;
 const createAnnouncement = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const validatedData = AnnouncementSchema_1.AnnouncementSchema.parse(req.body);
-        const newAnnouncement = yield Announcement_1.default.create(Object.assign(Object.assign({}, validatedData), { createdBy: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id }));
+        const newAnnouncement = yield Announcement_1.default.create(Object.assign(Object.assign({}, validatedData), { createdBy: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id, username: (_b = req.user) === null || _b === void 0 ? void 0 : _b.name }));
         res.status(201).json({ message: 'Announcement created successfully', announcement: newAnnouncement });
     }
     catch (error) {

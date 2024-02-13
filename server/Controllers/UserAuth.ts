@@ -36,7 +36,7 @@ const login = async (
                     return res.status(500).json({ error: 'Internal server error' });
                 }
                 if (result) {
-                    const token = jwt.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role }, JwtConfig.key);
+                    const token = jwt.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role, name: foundUser.name }, JwtConfig.key);
                     return res.status(200).json({ Authorization: "Bearer " + token });
                 } else {
                     return res.status(401).json({ error: 'Invalid password' });

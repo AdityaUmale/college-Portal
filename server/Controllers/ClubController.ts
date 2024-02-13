@@ -3,7 +3,7 @@ import Club from '../Models/Club';
 import { ClubSchema } from '../Schema/ClubSchema';
 import User from '../Models/User';
 interface AuthenticatedRequest extends Request {
-    user?: { _id: string; role: string, email: string, clubs: [string] };
+    user?: { _id: string; role: string, email: string, clubs: [string], name: string };
 }
 
 export const getAllClubs = async (req: Request, res: Response, next: Function) => {
@@ -21,7 +21,7 @@ export const getAllClubs = async (req: Request, res: Response, next: Function) =
 export const createClub = async (req: AuthenticatedRequest, res: Response, next: Function) => {
     try {
         const validatedData = ClubSchema.parse(req.body);
-        const newClub = await Club.create({ ...validatedData, clubHead: req.user?._id });
+        const newClub = await Club.create({ ...validatedData, clubHead: req.user?._id, username: req.user?.name });
         if (req.user?.role !== "staff") {
             return res.status(403).json({ message: 'You are not authorized to create club' });
         }
