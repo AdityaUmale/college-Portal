@@ -7,9 +7,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useRecoilValue } from "recoil";
+import { userState } from "@/app/recoilContextProvider";
 
 export default function SidebarUserInfo() {
-  const userName = "Shoaib Akhtar";
+  const userName = useRecoilValue(userState).name;
   const createUserFallBack = (userName: string) => {
     return userName
       .split(" ")

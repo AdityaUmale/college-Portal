@@ -19,7 +19,7 @@ const navlinks = [
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
   return (
-    <div className="bg-gray-800 h-screen flex flex-col justify-between items-center text-white w-64">
+    <div className="bg-gray-800 flex-shrink-0 h-screen flex flex-col justify-between items-center text-white w-64">
       <h1 className="text-3xl border-white border-2 rounded-xl p-3 m-3 font-semibold">
         Manage
       </h1>

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-
+import { RecoilRoot } from "recoil";
+import RecoidContextProvider from "./recoilContextProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,8 +20,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex">
-          <Sidebar />
-          {children}
+          <RecoidContextProvider>
+            <Sidebar />
+            {children}
+          </RecoidContextProvider>
         </div>
       </body>
     </html>
