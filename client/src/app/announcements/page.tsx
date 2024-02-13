@@ -3,28 +3,50 @@
 import AnnouncementComponent from "@/components/AnnouncementComponent";
 import ListWrapper from "@/components/ListWrapper";
 import { AnnouncementForm } from "@/components/forms/AnnouncementForm";
-import { useRecoilValue } from "recoil";
-import { userState } from "../recoilContextProvider";
-
-const announcements = [
-  {
-    title: "Announcement 1",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.",
-    createdBy: "8",
-    username: "Alice Smith",
-  },
-  {
-    title: "Announcement 2",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.",
-    createdBy: "1",
-    username: "Alice Smith",
-  },
-];
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  Announcemnt,
+  announcementsState,
+  userState,
+} from "../recoilContextProvider";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axiosInstance from "@/axiosInstance";
 
 export default function Announcements() {
-  const userId = useRecoilValue(userState)._id;
+  const user = useRecoilValue(userState);
+  const userId = user._id;
+  const { toast } = useToast();
+  const [announcements, setAnnouncements] = useRecoilState(announcementsState);
+  const router = useRouter();
+  useEffect(() => {
+    axiosInstance
+      .get("/announcement")
+      .then((response) => {
+        const fetchedEvents = response.data;
+        setAnnouncements(fetchedEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+        if (error.response.status === 401) {
+          router.push("/login");
+          toast({
+            title: "Error",
+            description: "Please login to view announcements",
+          });
+        }
+      });
+  }, []);
+  if (announcements.length === 0) {
+    return (
+      <ListWrapper heading="Announcements" form={<AnnouncementForm />}>
+        <h1 className=" text-5xl text-gray-600 font-semibold">
+          No events found
+        </h1>
+      </ListWrapper>
+    );
+  }
   return (
     <ListWrapper heading="Announcements" form={<AnnouncementForm />}>
       {announcements

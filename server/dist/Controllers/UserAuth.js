@@ -39,7 +39,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
                 }
                 if (result) {
                     const token = jsonwebtoken_1.default.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role, name: foundUser.name }, config_1.JwtConfig.key);
-                    return res.status(200).json({ Authorization: "Bearer " + token });
+                    return res.status(200).json({ token: `Bearer ${token}`, user: foundUser });
                 }
                 else {
                     return res.status(401).json({ error: 'Invalid password' });
@@ -53,7 +53,11 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.login = login;
 const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, name, password, role, clubs } = req.body;
+    const { email, name, password, role } = req.body;
+    const validatedUser = authSchema_1.registerSchema.safeParse(req.body);
+    if (!validatedUser.success) {
+        return res.status(400).json({ error: validatedUser.error });
+    }
     const user = yield User_1.default.findOne({ email: email });
     if (user) {
         return res.status(409).json({ message: "User with this email already present" });
@@ -79,8 +83,7 @@ const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         name,
         email,
         password: hashedPass,
-        role,
-        clubs
+        role
     }).then((user) => {
         return res.status(200).json({ message: "User signup successfull" });
     }).catch((err) => {

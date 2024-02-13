@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Popover,
@@ -21,7 +22,7 @@ const ListWrapper: React.FC<ListWrapperProps> = ({
 }) => {
   const userRole = useRecoilValue(userState).role;
   return (
-    <main className="flex-grow h-screen flex flex-col justify-center items-center gap-2 bg-slate-100">
+    <main className="flex-grow flex-1 h-screen flex flex-col justify-center items-center gap-2 bg-slate-100">
       <div className="w-[80%] flex justify-between ">
         <h1 className="text-5xl font-bold text-gray-800">{heading}</h1>
         {form && userRole === "staff" && (

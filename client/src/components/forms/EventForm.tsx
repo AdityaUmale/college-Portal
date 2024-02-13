@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axiosInstance from "@/axiosInstance";
+import { useSetRecoilState } from "recoil";
+import { eventsState } from "@/app/recoilContextProvider";
 
 const formSchema = z.object({
   Title: z.string().min(2, {
@@ -35,10 +38,21 @@ export function EventForm() {
       Link: "",
     },
   });
-
+  const setEvent = useSetRecoilState(eventsState);
   function onSubmit(values: z.infer<typeof formSchema>) {
+    axiosInstance
+      .post("/event/create", {
+        title: values.Title,
+        description: values.Description,
+        link: values.Link,
+      })
+      .then((response) => {
+        setEvent((oldEvents) => [...oldEvents, response.data.event]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    console.log(values);
   }
 
   return (

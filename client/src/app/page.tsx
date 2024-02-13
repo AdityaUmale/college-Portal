@@ -2,30 +2,48 @@
 
 import EventComponent from "@/components/EventComponent";
 import ListWrapper from "@/components/ListWrapper";
-import { useRecoilValue } from "recoil";
-import { userState } from "./recoilContextProvider";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { eventsState, userState } from "./recoilContextProvider";
 import { EventForm } from "@/components/forms/EventForm";
+import { useEffect } from "react";
+import axiosInstance from "@/axiosInstance";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
-const events = [
-  {
-    name: "Event 1",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.",
-    link: "https://example.com/event1",
-    createdBy: "8",
-    username: "Alice Smith",
-  },
-  {
-    name: "Event 1",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra libero eget ipsum sodales, sed posuere odio rhoncus. Morbi dignissim, libero at dignissim ultrices, ipsum tortor cursus eros, eu luctus magna ante non ipsum. Fusce ut mi vel arcu sollicitudin elementum. Quisque non orci at velit hendrerit placerat. Nam suscipit nulla non ante dapibus, id vehicula felis feugiat. Aliquam erat volutpat.",
-    link: "https://example.com/event1",
-    createdBy: "1",
-    username: "Alice Smith",
-  },
-];
 export default function Events() {
-  const userId = useRecoilValue(userState)._id;
+  const user = useRecoilValue(userState);
+  const { toast } = useToast();
+  const [events, setEvents] = useRecoilState(eventsState);
+  const router = useRouter();
+  useEffect(() => {
+    axiosInstance
+      .get("/event")
+      .then((response) => {
+        const fetchedEvents = response.data;
+        setEvents(fetchedEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+        if (error.response.status === 401) {
+          router.push("/login");
+          toast({
+            title: "Error",
+            description: "Please login to view events",
+          });
+        }
+      });
+  }, []);
+
+  const userId = user._id;
+  if (events.length === 0) {
+    return (
+      <ListWrapper heading="Events" form={<EventForm />}>
+        <h1 className=" text-5xl text-gray-600 font-semibold">
+          No events found
+        </h1>
+      </ListWrapper>
+    );
+  }
   return (
     <ListWrapper heading="Events" form={<EventForm />}>
       {events.map((event, index) => {
@@ -33,7 +51,7 @@ export default function Events() {
           return (
             <EventComponent
               key={index}
-              name={event.name}
+              name={event.title}
               description={event.description}
               link={event.link}
               createdBy={event.createdBy}
@@ -47,7 +65,7 @@ export default function Events() {
           return (
             <EventComponent
               key={index}
-              name={event.name}
+              name={event.title}
               description={event.description}
               link={event.link}
               createdBy={event.createdBy}
