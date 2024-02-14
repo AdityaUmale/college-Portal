@@ -24,12 +24,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const suggestionSchema = new mongoose_1.Schema({
+    suggestion: String,
+    createdBy: String
+});
 const eventSchema = new mongoose_1.Schema({
     title: String,
     description: String,
     link: String,
     createdBy: String,
     username: String,
+    suggestions: [suggestionSchema]
 });
 const Event = mongoose_1.default.model('Event', eventSchema);
 exports.default = Event;

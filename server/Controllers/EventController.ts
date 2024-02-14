@@ -15,6 +15,37 @@ export const getAllEvents = async (req: Request, res: Response, next: Function) 
         next(error);
     }
 };
+export const getAllSuggestions = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+        const eventId = req.params.id;
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+        let newSuggestions = [];
+        for (const suggestion of event.suggestions) {
+            newSuggestions.push({ suggestion: suggestion.suggestion, createdBy: suggestion.createdBy === event.createdBy ? 'Author' : suggestion.createdBy === req.user?._id ? 'You' : 'Anonymous' });
+        }
+        res.json({ suggestions: newSuggestions });
+    } catch (error) {
+        next(error);
+    }
+};
+export const createSuggestion = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+        const eventId = req.params.id;
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+        const suggestion = req.body.suggestion;
+        event.suggestions.push({ suggestion, createdBy: req.user?._id });
+        await event.save();
+        res.json(event.suggestions);
+    } catch (error) {
+        next(error);
+    }
+};
 export const deleteEventById = async (req: Request, res: Response, next: Function) => {
     try {
         const eventId = req.params.id;

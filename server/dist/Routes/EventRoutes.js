@@ -12,3 +12,5 @@ exports.eventRouter = eventRouter;
 eventRouter.route("/").get(EventController_1.getAllEvents);
 eventRouter.route("/:id").delete(staffVerify_1.verifyStaff, EventController_1.deleteEventById);
 eventRouter.route("/create").post(staffVerify_1.verifyStaff, EventController_1.createEvent);
+eventRouter.route("/getAllSuggestions/:id").get(EventController_1.getAllSuggestions);
+eventRouter.route("/suggestion/:id").post(EventController_1.createSuggestion);

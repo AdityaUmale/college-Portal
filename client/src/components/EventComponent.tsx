@@ -1,6 +1,14 @@
+"use client";
 import { userState } from "@/app/recoilContextProvider";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { PlusCircle } from "lucide-react";
 import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
+import ChatComponent from "./chatComponent";
 
 interface EventComponentProps {
   name: string;
@@ -8,6 +16,7 @@ interface EventComponentProps {
   link: string;
   createdBy: string;
   username: string;
+  eventId: string;
 }
 
 const EventComponent: React.FC<EventComponentProps> = ({
@@ -16,6 +25,7 @@ const EventComponent: React.FC<EventComponentProps> = ({
   link,
   createdBy,
   username,
+  eventId,
 }) => {
   const [showMore, setShowMore] = useState(false);
   const toggleDescription = () => {
@@ -27,7 +37,18 @@ const EventComponent: React.FC<EventComponentProps> = ({
   if (createdBy === userId) {
     return (
       <div className="border hover:border-gray-500 border-gray-300 bg-gray-700 text-white hover:bg-gray-600 rounded-lg p-4 mb-4">
-        <h2 className="text-2xl font-semibold mb-2">{name} (Your Event)</h2>
+        <div className="flex w-full justify-between items-center">
+          <h2 className="text-2xl font-semibold mb-2">{name} (Your Event)</h2>
+          <Popover>
+            <PopoverTrigger className=" bg-gray-500 flex items-center gap-1 justify-center p-3 rounded-md text-white font-bold">
+              Suggestions
+            </PopoverTrigger>
+            <PopoverContent className="custom-scrollbar w-[30rem] h-fit max-h-[20rem] overflow-auto bg-white rounded-lg border-gray-500 border-2 text-black p-2 font-bold">
+              <div className=" text-2xl mx-2">Suggestions</div>
+              <ChatComponent eventId={eventId} />
+            </PopoverContent>
+          </Popover>
+        </div>
         <div
           className={`mb-2 ${showMore ? "" : "line-clamp-3"} whitespace-normal`}
         >
@@ -46,7 +67,18 @@ const EventComponent: React.FC<EventComponentProps> = ({
   }
   return (
     <div className="border hover:border-gray-500 hover:bg-gray-200 border-gray-300 flex flex-col items-start rounded-lg p-4 mb-4">
-      <h2 className="text-lg font-semibold mb-2">{name}</h2>
+      <div className="flex w-full justify-between items-center">
+        <h2 className="text-2xl font-semibold mb-2">{name}</h2>
+        <Popover>
+          <PopoverTrigger className=" bg-gray-500 flex items-center gap-1 justify-center p-3 rounded-md text-white font-bold">
+            Suggestions
+          </PopoverTrigger>
+          <PopoverContent className="custom-scrollbar w-[30rem] h-fit max-h-[20rem] overflow-auto bg-white rounded-lg border-gray-500 border-2 text-black p-2 font-bold">
+            <div className=" text-2xl mx-2">Suggestions</div>
+            <ChatComponent eventId={eventId} />
+          </PopoverContent>
+        </Popover>
+      </div>
       <div
         className={`mb-2 ${showMore ? "" : "line-clamp-3"} whitespace-normal`}
       >

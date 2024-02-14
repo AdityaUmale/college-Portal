@@ -51,6 +51,7 @@ export default function Events() {
           return (
             <EventComponent
               key={index}
+              eventId={event._id}
               name={event.title}
               description={event.description}
               link={event.link}
@@ -65,6 +66,7 @@ export default function Events() {
           return (
             <EventComponent
               key={index}
+              eventId={event._id}
               name={event.title}
               description={event.description}
               link={event.link}
