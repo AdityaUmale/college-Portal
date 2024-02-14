@@ -15,6 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axiosInstance from "@/axiosInstance";
+import { useSetRecoilState } from "recoil";
+import { announcementsState } from "@/app/recoilContextProvider";
 
 const formSchema = z.object({
   Title: z.string().min(2, {
@@ -33,8 +36,22 @@ export function AnnouncementForm() {
       Description: "",
     },
   });
-
+  const setAnnouncement = useSetRecoilState(announcementsState);
   function onSubmit(values: z.infer<typeof formSchema>) {
+    axiosInstance
+      .post("/announcement/create", {
+        title: values.Title,
+        description: values.Description,
+      })
+      .then((response) => {
+        setAnnouncement((oldAnnouncements) => [
+          ...oldAnnouncements,
+          response.data.announcement,
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     console.log(values);
   }

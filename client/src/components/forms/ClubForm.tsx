@@ -15,6 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axiosInstance from "@/axiosInstance";
+import { useSetRecoilState } from "recoil";
+import { clubsState } from "@/app/recoilContextProvider";
 
 const formSchema = z.object({
   Title: z.string().min(2, {
@@ -33,10 +36,20 @@ export function ClubForm() {
       Description: "",
     },
   });
-
+  const setClub = useSetRecoilState(clubsState);
   function onSubmit(values: z.infer<typeof formSchema>) {
+    axiosInstance
+      .post("/club/create", {
+        name: values.Title,
+        description: values.Description,
+      })
+      .then((response) => {
+        setClub((oldClub) => [...oldClub, response.data.club]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    console.log(values);
   }
 
   return (

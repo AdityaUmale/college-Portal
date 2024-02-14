@@ -18,7 +18,6 @@ const EventComponent: React.FC<EventComponentProps> = ({
   username,
 }) => {
   const [showMore, setShowMore] = useState(false);
-
   const toggleDescription = () => {
     setShowMore(!showMore);
   };

@@ -1,5 +1,5 @@
 import express from "express";
-import { loginSchema } from "../Schema/authSchema";
+import { loginSchema, registerSchema } from "../Schema/authSchema";
 import User from "../Models/User";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
@@ -13,7 +13,6 @@ const login = async (
     next: express.NextFunction
 ) => {
     try {
-
         const { email, password } = req.body;
         const userData = { email, password };
         const validationResult = loginSchema.safeParse(userData);
@@ -37,7 +36,7 @@ const login = async (
                 }
                 if (result) {
                     const token = jwt.sign({ email: foundUser.email, _id: foundUser._id, role: foundUser.role, name: foundUser.name }, JwtConfig.key);
-                    return res.status(200).json({ Authorization: "Bearer " + token });
+                    return res.status(200).json({ token: `Bearer ${token}`, user: foundUser });
                 } else {
                     return res.status(401).json({ error: 'Invalid password' });
                 }
@@ -54,7 +53,11 @@ const register = async (
     res: express.Response,
     next: express.NextFunction
 ) => {
-    const { email, name, password, role, clubs } = req.body;
+    const { email, name, password, role } = req.body;
+    const validatedUser = registerSchema.safeParse(req.body);
+    if (!validatedUser.success) {
+        return res.status(400).json({ error: validatedUser.error });
+    }
     const user = await User.findOne({ email: email });
     if (user) {
         return res.status(409).json({ message: "User with this email already present" })
@@ -80,8 +83,7 @@ const register = async (
         name,
         email,
         password: hashedPass,
-        role,
-        clubs
+        role
     }).then((user: any) => {
         return res.status(200).json({ message: "User signup successfull" })
     }).catch((err) => {

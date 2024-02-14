@@ -50,6 +50,5 @@ const registerSchema = z.object({
         message: "Password must contain at least one special character"
     }),
     role: z.enum(["user", "staff"]),
-    clubs: z.array(z.string().min(1))
 });
 exports.registerSchema = registerSchema;

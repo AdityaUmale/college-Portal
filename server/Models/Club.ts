@@ -1,7 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 
 const clubSchema = new Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
     description: String,
     strength: {
         type: Number,
