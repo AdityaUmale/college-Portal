@@ -1,7 +1,18 @@
-import Image from "next/image";
+"use client";
+import { useRecoilValue } from "recoil";
+import { userState } from "./recoilContextProvider";
+import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+
 export default function Home() {
+  const user = useRecoilValue(userState);
+  const router = useRouter();
+  if (user._id) {
+    router.push("/dashboard");
+  }
   return (
-    <main className="h-screen w-screen">
+    <main className="h-screen w-screen flex flex-col">
+      {!user._id && <Navbar />}
       <header className="bg-gray-200 shadow-md py-4 h-45">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-6 pl-10">

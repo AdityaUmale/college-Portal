@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
 import RecoidContextProvider from "./recoilContextProvider";
 const inter = Inter({ subsets: ["latin"] });
 import { Toaster } from "@/components/ui/toaster";
