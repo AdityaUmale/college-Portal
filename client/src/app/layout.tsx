@@ -21,10 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex w-full">
-          <RecoidContextProvider>
-            <Sidebar />
-            {children}
-          </RecoidContextProvider>
+          <RecoidContextProvider>{children}</RecoidContextProvider>
         </div>
         <Toaster />
       </body>

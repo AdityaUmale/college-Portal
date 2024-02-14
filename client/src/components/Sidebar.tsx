@@ -7,16 +7,20 @@ import SidebarUserInfo from "./SidebarUserInfo";
 import { CalendarCheck, RadioTower, Users } from "lucide-react";
 
 const navlinks = [
-  { id: 1, icon: <CalendarCheck />, name: "Events", path: "/" },
+  { id: 1, icon: <CalendarCheck />, name: "Events", path: "/dashboard" },
   {
     id: 2,
     icon: <RadioTower />,
     name: "Announcements",
-    path: "/announcements",
+    path: "/dashboard/announcements",
   },
-  { id: 3, icon: <Users />, name: "Clubs", path: "/clubs" },
+  { id: 3, icon: <Users />, name: "Clubs", path: "/dashboard/clubs" },
 ];
-const allowedPaths = ["/", "/announcements", "/clubs"];
+const allowedPaths = [
+  "/dashboard",
+  "/dashboard/announcements",
+  "/dashboard/clubs",
+];
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
   if (!allowedPaths.includes(pathname)) return null;
