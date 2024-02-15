@@ -3,6 +3,17 @@ import { useRecoilValue } from "recoil";
 import { userState } from "./recoilContextProvider";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import img1 from "../assets/img1.webp";
+import img2 from "../assets/img2.webp";
+import img3 from "../assets/img3.webp";
+import img4 from "../assets/img4.webp";
+import img5 from "../assets/img5.webp";
+import img6 from "../assets/img6.webp";
+import img7 from "../assets/img7.webp";
+import img8 from "../assets/img8.png";
+import img9 from "../assets/img9.jpg";
+import img10 from "../assets/img10.jpg";
 
 export default function Home() {
   const user = useRecoilValue(userState);
@@ -16,21 +27,9 @@ export default function Home() {
       <header className="bg-gray-200 shadow-md py-4 h-45">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-6 pl-10">
-            <img
-              src="https://coeta.ac.in/wp-content/uploads/2022/05/panjabrao.png"
-              alt="logo-0"
-              className="h-20"
-            />
-            <img
-              src="https://coeta.ac.in/wp-content/uploads/2022/05/coeta_logo.png"
-              alt="logo-1"
-              className="h-20"
-            />
-            <img
-              src="https://coeta.ac.in/wp-content/uploads/2022/05/SSES-logo-300x294.png"
-              alt="logo-2"
-              className="h-20"
-            />
+            <Image src={img1} alt="logo-0" width={80} height={80} />
+            <Image src={img2} alt="logo-1" width={80} height={80} />
+            <Image src={img3} alt="logo-2" width={80} height={80} />
           </div>
           <div className="flex-auto ml-20 pl-12">
             <p className="text-xl font-bold ml-12 text-gray-500">
@@ -44,16 +43,9 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center space-x-6 pl-10">
-            <img
-              src="https://coeta.ac.in/wp-content/uploads/2022/05/naac-removebg-preview-300x197.png"
-              alt="logo-3"
-              className="h-20"
-            />
-            <img
-              src="https://coeta.ac.in/wp-content/uploads/2022/05/estd1983-logo.png"
-              alt="logo-4"
-              className="h-20"
-            />
+            <Image src={img4} alt="logo-3" width={80} height={80} />
+
+            <Image src={img5} alt="logo-4" width={80} height={80} />
           </div>
         </div>
       </header>
@@ -71,19 +63,23 @@ export default function Home() {
           </p>
         </div>
         <div className="w-1/2 mr-5">
-          <img
-            src="https://coeta.ac.in/wp-content/uploads/2022/05/Coeta-front.jpg"
-            alt="clgBuilding"
-            className="rounded-3xl"
+          <Image
+            src={img6}
+            alt="logo-5"
+            width={2000}
+            height={2000}
+            style={{ width: "100%" }}
           />
         </div>
       </div>
       <div className="mt-20 flex drop-shadow-2xl">
         <div className="w-1/2 ml-5">
-          <img
-            src="https://coeta.ac.in/wp-content/uploads/2022/07/CSE-4.jpg"
-            alt="clgBuilding"
-            className="rounded-3xl"
+          <Image
+            src={img7}
+            alt="logo-6"
+            width={2000}
+            height={2000}
+            style={{ width: "100%" }}
           />
         </div>
         <div className="w-1/2 justify-centre items-center bg-slate-100 rounded-3xl">
@@ -100,10 +96,12 @@ export default function Home() {
       </div>
       <div className="mt-10 flex justify-around h-2/3 px-6">
         <div className="max-w-sm rounded-3xl overflow-hidden shadow-2xl ml-5 w-1/4">
-          <img
-            className="w-full"
-            src="https://cdn-blog.novoresume.com/articles/extracurricular-activities/bg.png"
-            alt="Sunset in the mountains"
+          <Image
+            src={img7}
+            alt="logo-6"
+            width={2000}
+            height={2000}
+            style={{ width: "100%" }}
           />
           <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">Community clubs</div>
@@ -125,10 +123,12 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-sm rounded-3xl overflow-hidden shadow-2xl w-1/4">
-          <img
-            className="w-full"
-            src="https://repowis2k23.blueinkcreations.com/wp-content/uploads/2023/02/cultural-event.jpg"
-            alt="Sunset in the mountains"
+          <Image
+            src={img8}
+            alt="logo-7"
+            width={2000}
+            height={2000}
+            style={{ width: "100%" }}
           />
           <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">Cultural Events</div>
@@ -138,10 +138,12 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-sm rounded-3xl overflow-hidden shadow-2xl w-1/4">
-          <img
-            className="w-full"
-            src="https://polarishighcounseling.weebly.com/uploads/7/3/7/9/73799061/2456382_orig.jpg"
-            alt="Sunset in the mountains"
+          <Image
+            src={img9}
+            alt="logo-8"
+            width={2000}
+            height={2000}
+            style={{ width: "100%" }}
           />
           <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">
