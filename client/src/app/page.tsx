@@ -68,7 +68,7 @@ export default function Home() {
             alt="logo-5"
             width={2000}
             height={2000}
-            style={{ width: "100%" }}
+            className="w-full rounded-3xl"
           />
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function Home() {
             alt="logo-6"
             width={2000}
             height={2000}
-            style={{ width: "100%" }}
+            className="w-full rounded-3xl"
           />
         </div>
         <div className="w-1/2 justify-centre items-center bg-slate-100 rounded-3xl">
