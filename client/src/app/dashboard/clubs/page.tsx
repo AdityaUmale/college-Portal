@@ -7,7 +7,7 @@ import { ClubForm } from "@/components/forms/ClubForm";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Club, clubsState } from "../recoilContextProvider";
+import { Club, clubsState } from "../../recoilContextProvider";
 import { useRecoilState } from "recoil";
 
 export default function Clubs() {

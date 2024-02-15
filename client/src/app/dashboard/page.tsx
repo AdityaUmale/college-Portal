@@ -3,7 +3,7 @@
 import EventComponent from "@/components/EventComponent";
 import ListWrapper from "@/components/ListWrapper";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { eventsState, userState } from "./recoilContextProvider";
+import { eventsState, userState } from "../recoilContextProvider";
 import { EventForm } from "@/components/forms/EventForm";
 import { useEffect } from "react";
 import axiosInstance from "@/axiosInstance";

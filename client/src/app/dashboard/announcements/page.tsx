@@ -8,7 +8,7 @@ import {
   Announcemnt,
   announcementsState,
   userState,
-} from "../recoilContextProvider";
+} from "../../recoilContextProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
