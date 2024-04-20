@@ -139,7 +139,7 @@ export default function Home() {
         </div>
         <div className="max-w-sm rounded-3xl overflow-hidden shadow-2xl w-1/4">
           <Image
-            src={img9}
+            src={img10}
             alt="logo-8"
             width={2000}
             height={2000}
