@@ -42,7 +42,7 @@ export default function Announcements() {
     return (
       <ListWrapper heading="Announcements" form={<AnnouncementForm />}>
         <h1 className=" text-5xl text-gray-600 font-semibold">
-          No events found
+          No Announcements found
         </h1>
       </ListWrapper>
     );

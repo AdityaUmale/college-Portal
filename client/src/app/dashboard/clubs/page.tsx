@@ -36,7 +36,7 @@ export default function Clubs() {
     return (
       <ListWrapper heading="Clubs" form={<ClubForm />}>
         <h1 className=" text-5xl text-gray-600 font-semibold">
-          No events found
+          No Clubs found
         </h1>
       </ListWrapper>
     );
