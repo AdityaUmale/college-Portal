@@ -53,6 +53,7 @@ export default function Clubs() {
           strength={club.strength}
           clubHead={club.clubHead}
           username={club.username}
+          members={club.members}
         />
       ))}
     </ListWrapper>

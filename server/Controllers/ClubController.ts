@@ -8,7 +8,7 @@ interface AuthenticatedRequest extends Request {
 
 export const getAllClubs = async (req: Request, res: Response, next: Function) => {
     try {
-        const clubs = await Club.find();
+        const clubs = await Club.find().populate('members', 'name');
         if (!clubs || clubs.length === 0) {
             return res.status(404).json({ message: 'No clubs found' });
         }
@@ -48,7 +48,9 @@ export const applyClub = async (req: AuthenticatedRequest, res: Response, next: 
             return res.status(404).json({ message: 'User is already in the club' });
         }
         club.strength += 1;
+        club.members.push(userToBeUpdated._id);
         await club.save();
+    
         userToBeUpdated.clubs.push(club.name!);
         await userToBeUpdated.save();
 
@@ -57,4 +59,17 @@ export const applyClub = async (req: AuthenticatedRequest, res: Response, next: 
         next(error);
     }
 };
+
+export const getClubMembers = async (req: Request, res: Response, next: Function) => {
+    try {
+      const clubId = req.params.id;
+      const club = await Club.findById(clubId).populate('members', 'name');
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+      res.json(club.members);
+    } catch (error) {
+      next(error);
+    }
+  };
 

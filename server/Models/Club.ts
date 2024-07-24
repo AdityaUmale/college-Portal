@@ -16,6 +16,10 @@ const clubSchema = new Schema({
         ref: 'User'
     },
     username: String,
+    members: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
 });
 
 const Club = mongoose.model('Club', clubSchema);

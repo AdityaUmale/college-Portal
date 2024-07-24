@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/axiosInstance";
 import { set } from "react-hook-form";
+import ClubMembersList from "./ClubMembersList";
 
 interface ClubComponentProps {
   id: string;
@@ -13,6 +14,7 @@ interface ClubComponentProps {
   createdBy: string;
   clubHead: string;
   username: string;
+  members: { _id: string; name: string}[];
 }
 
 const ClubComponent: React.FC<ClubComponentProps> = ({
@@ -22,8 +24,10 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   strength,
   clubHead,
   username,
+  members,
 }) => {
   const [showMore, setShowMore] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
 
   const toggleDescription = () => {
     setShowMore(!showMore);
@@ -32,13 +36,22 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   const setClub = useSetRecoilState(clubsState);
   const userId = user._id;
   const userRole = user.role;
+
+  const toggleMembers = () => {
+    setShowMembers(!showMembers);
+  };
+
   const applyClub = () => {
     axiosInstance.get(`/club/apply/${id}`).then((response) => {
       setUser((oldUser) => ({ ...oldUser, clubs: [...oldUser.clubs, name] }));
       setClub((oldClubs) => {
         const newClubs = oldClubs.map((club) => {
           if (club._id === id) {
-            return { ...club, strength: club.strength + 1 };
+            return { 
+               ...club,
+               strength: club.strength + 1,
+               members: [...club.members, { _id: user._id, name: user.name }]
+               };
           }
           return club;
         });
@@ -63,9 +76,22 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
             {showMore ? "Show less" : "Show more"}
           </button>
         )}
-        <div>
+         <div>
           <div>Strength:{strength}</div>
         </div>
+        <Button onClick={toggleMembers} variant="outline" className="mt-2">
+          {showMembers ? 'Hide Members' : 'Show Members'}
+        </Button>
+        {showMembers && (
+          <div className="mt-2">
+            <h3 className="text-lg font-semibold">Members:</h3>
+            <ul>
+              {members.map((member) => (
+                <li key={member._id}>{member.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
@@ -99,6 +125,19 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
         >
           Apply
         </Button>
+      )}
+      <Button onClick={toggleMembers} variant="outline" className="mt-2">
+        {showMembers ? 'Hide Members' : 'Show Members'}
+      </Button>
+      {showMembers && (
+        <div className="mt-2">
+          <h3 className="text-lg font-semibold">Members:</h3>
+          <ul>
+            {members.map((member) => (
+              <li key={member._id}>{member.name}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

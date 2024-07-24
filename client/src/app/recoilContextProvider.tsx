@@ -33,6 +33,7 @@ export interface Club {
   strength: number;
   clubHead: string;
   username: string;
+  members: { _id: string; name: string }[];
 }
 export const userState = atom<User>({
   key: "userState",
