@@ -34,6 +34,7 @@ export interface Club {
   clubHead: string;
   username: string;
   members: { _id: string; name: string }[];
+  pendingRequests: { _id: { _id: string; name: string }; name: string }[];
 }
 export const userState = atom<User>({
   key: "userState",

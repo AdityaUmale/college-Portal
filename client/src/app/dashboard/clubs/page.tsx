@@ -54,6 +54,7 @@ export default function Clubs() {
           clubHead={club.clubHead}
           username={club.username}
           members={club.members}
+          pendingRequests={club.pendingRequests}
         />
       ))}
     </ListWrapper>

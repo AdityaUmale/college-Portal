@@ -3,12 +3,12 @@ import Club from '../Models/Club';
 import { ClubSchema } from '../Schema/ClubSchema';
 import User from '../Models/User';
 interface AuthenticatedRequest extends Request {
-    user?: { _id: string; role: string, email: string, clubs: [string], name: string };
+    user?: { _id: string; role: string, email: string, clubs: string[], name: string };
 }
 
 export const getAllClubs = async (req: Request, res: Response, next: Function) => {
     try {
-        const clubs = await Club.find().populate('members', 'name');
+        const clubs = await Club.find().populate('members', 'name').populate('pendingRequests._id', 'name');
         if (!clubs || clubs.length === 0) {
             return res.status(404).json({ message: 'No clubs found' });
         }
@@ -44,21 +44,20 @@ export const applyClub = async (req: AuthenticatedRequest, res: Response, next: 
         if (!userToBeUpdated) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (userToBeUpdated.clubs.includes(club.name!)) {
-            return res.status(404).json({ message: 'User is already in the club' });
+        if (club.members.includes(userToBeUpdated._id)) {
+            return res.status(400).json({ message: 'User is already in the club' });
+          }
+          if (club.pendingRequests.some(request => request._id && request._id.toString() === userToBeUpdated._id.toString())) {
+            return res.status(400).json({ message: 'User has already requested to join this club' });
+          }
+          club.pendingRequests.push({ _id: userToBeUpdated._id, name: userToBeUpdated.name });
+          await club.save();
+          
+          res.json({ message: 'Club join request sent successfully' });
+        } catch (error) {
+          next(error);
         }
-        club.strength += 1;
-        club.members.push(userToBeUpdated._id);
-        await club.save();
-    
-        userToBeUpdated.clubs.push(club.name!);
-        await userToBeUpdated.save();
-
-        res.json({ message: 'Club applied successfully' });
-    } catch (error) {
-        next(error);
-    }
-};
+      };
 
 export const getClubMembers = async (req: Request, res: Response, next: Function) => {
     try {
@@ -73,3 +72,49 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
     }
   };
 
+  export const acceptClubRequest = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const clubId = req.params.id;
+      const userId = typeof req.params.userId === 'string' ? req.params.userId : JSON.parse(req.params.userId).id;
+
+      console.log('Received request to accept. Club ID:', clubId, 'User ID:', userId);
+      console.log('Request params:', req.params);
+      console.log('Request body:', req.body);
+      
+      const club = await Club.findById(clubId);
+      console.log('Found club:', club ? 'Yes' : 'No');
+
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+        }
+        console.log('Club pending requests:', JSON.stringify(club.pendingRequests));
+      
+      if (req.user?.role !== "staff" && req.user?._id.toString() !== club.clubHead?.toString()) {
+        return res.status(403).json({ message: 'You are not authorized to accept club requests' });
+      }
+      
+      const pendingRequestIndex = club.pendingRequests.findIndex(request => request._id && request._id.toString() === userId);
+      if (pendingRequestIndex === -1) {
+        return res.status(404).json({ message: 'User request not found' });
+      }
+      console.log('Pending request index:', pendingRequestIndex);
+      
+      const acceptedUser = club.pendingRequests[pendingRequestIndex];
+      club.pendingRequests.splice(pendingRequestIndex, 1);
+      if (acceptedUser._id){
+      club.members.push(acceptedUser._id);
+      }
+      club.strength += 1;
+      await club.save();
+      
+      const user = await User.findById(userId);
+      if (user) {
+        user.clubs.push(club.name);
+        await user.save();
+      }
+      
+      res.json({ message: 'User request accepted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };

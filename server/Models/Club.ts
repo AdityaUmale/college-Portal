@@ -20,6 +20,13 @@ const clubSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }],
+    pendingRequests: [{
+        _id:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+        },
+        name: String
+    }]
 });
 
 const Club = mongoose.model('Club', clubSchema);
