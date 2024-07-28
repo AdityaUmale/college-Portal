@@ -118,3 +118,31 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       next(error);
     }
   };
+
+  export const deleteClub = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const clubId = req.params.id;
+  
+      // Check if the user is staff
+      if (req.user?.role !== "staff") {
+        return res.status(403).json({ message: 'Only staff can delete clubs' });
+      }
+  
+      // Find and delete the club
+      const deletedClub = await Club.findByIdAndDelete(clubId);
+  
+      if (!deletedClub) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+  
+      // Remove the club from all members' club lists
+      await User.updateMany(
+        { clubs: deletedClub.name },
+        { $pull: { clubs: deletedClub.name } }
+      );
+  
+      res.json({ message: 'Club deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };

@@ -105,6 +105,16 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       });
   };
 
+  const deleteClub = () => {
+    if (window.confirm("Are you sure you want to delete this club?")) {
+      axiosInstance.delete(`/club/${id}`).then(() => {
+        setClub((oldClubs) => oldClubs.filter((club) => club._id !== id));
+      }).catch((error) => {
+        console.error("Error deleting club:", error);
+      });
+    }
+  };
+
   if (clubHead === userId || userRole === "staff") {
     return (
       <div className="border hover:border-gray-500 border-gray-300 bg-gray-700 text-white hover:bg-gray-600 rounded-lg p-4 mb-4">
@@ -165,10 +175,14 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
             <p>No pending requests.</p>
           )}
         </div>
+        {userRole === "staff" && (
+          <Button onClick={deleteClub} variant="destructive" className="mt-2">
+            Delete Club
+          </Button>
+        )}
       </div>
     );
   }
-
   return (
     <div className="border hover:border-gray-500 hover:bg-gray-200 gap-2 border-gray-300 flex flex-col items-start rounded-lg p-4 mb-4">
       <h2 className="text-lg font-semibold mb-2">
@@ -218,8 +232,13 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
           </ul>
         </div>
       )}
-    </div>
-  );
-};
+   {userRole === "staff" && (
+          <Button onClick={deleteClub} variant="destructive" className="mt-2">
+            Delete Club
+          </Button>
+        )}
+      </div>
+    );
+  }
 
 export default ClubComponent;
