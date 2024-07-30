@@ -40,6 +40,17 @@ const clubSchema = new mongoose_1.Schema({
         ref: 'User'
     },
     username: String,
+    members: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+    pendingRequests: [{
+            _id: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            name: String
+        }]
 });
 const Club = mongoose_1.default.model('Club', clubSchema);
 exports.default = Club;

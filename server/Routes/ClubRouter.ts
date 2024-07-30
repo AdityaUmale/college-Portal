@@ -1,6 +1,6 @@
 import express from 'express'
 import { verifyStaff } from '../middlewares/staffVerify'
-import { acceptClubRequest, applyClub, createClub, deleteClub, getAllClubs, getClubMembers } from '../Controllers/ClubController'
+import { acceptClubRequest, applyClub, assignClubHead, createClub, deleteClub, getAllClubs, getClubMembers, removeMember } from '../Controllers/ClubController'
 
 
 const ClubRouter = express.Router()
@@ -11,5 +11,7 @@ ClubRouter.route("/create").post(verifyStaff, createClub)
 ClubRouter.route('/:id/members').get(getClubMembers)
 ClubRouter.route('/accept-request/:id/:userId').post(acceptClubRequest)
 ClubRouter.route('/:id').delete(deleteClub)
+ClubRouter.route('/:id/remove-member/:userId').post(removeMember)
+ClubRouter.route('/:id/assign-head/:userId').post(assignClubHead)
 
 export { ClubRouter }

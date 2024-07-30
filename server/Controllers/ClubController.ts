@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Club from '../Models/Club';
 import { ClubSchema } from '../Schema/ClubSchema';
 import User from '../Models/User';
+import mongoose, { Schema } from 'mongoose';
 interface AuthenticatedRequest extends Request {
     user?: { _id: string; role: string, email: string, clubs: string[], name: string };
 }
@@ -142,6 +143,45 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       );
   
       res.json({ message: 'Club deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export const assignClubHead = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+        const { userId } = req.params;
+        const clubId = req.params.id;
+        const club = await Club.findById(clubId);
+      if (req.user?.role !== "staff" && req.user?._id.toString() !== club?.clubHead?.toString()  && req.user?._id.toString() !== clubId) {
+        return res.status(403).json({ message: 'Not authorized to assign club head' });
+      }
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+      club.clubHead = new mongoose.Types.ObjectId(userId);
+      await club.save();
+      res.json({ message: 'Club head assigned successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export const removeMember = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const { userId } = req.params;
+      const clubId = req.params.id;
+      const club = await Club.findById(clubId);
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+      if (req.user?.role !== "staff" && req.user?._id.toString() !== club.clubHead?.toString()) {
+        return res.status(403).json({ message: 'Not authorized to remove members' });
+      }
+      club.members = club.members.filter(member => member.toString() !== userId);
+      await club.save();
+      await User.findByIdAndUpdate(userId, { $pull: { clubs: club.name } });
+      res.json({ message: 'Member removed successfully' });
     } catch (error) {
       next(error);
     }

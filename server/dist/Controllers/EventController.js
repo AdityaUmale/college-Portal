@@ -48,7 +48,7 @@ const getAllSuggestions = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.getAllSuggestions = getAllSuggestions;
 const createSuggestion = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _a;
     try {
         const eventId = req.params.id;
         const event = yield Event_1.default.findById(eventId);
@@ -56,7 +56,7 @@ const createSuggestion = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             return res.status(404).json({ message: 'Event not found' });
         }
         const suggestion = req.body.suggestion;
-        event.suggestions.push({ suggestion, createdBy: (_b = req.user) === null || _b === void 0 ? void 0 : _b._id });
+        event.suggestions.push({ suggestion, createdBy: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id });
         yield event.save();
         res.json(event.suggestions);
     }
@@ -80,11 +80,11 @@ const deleteEventById = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.deleteEventById = deleteEventById;
 const createEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _a, _b;
     try {
         const validatedData = EventSchema_1.EventSchema.parse(req.body);
-        const username = (_c = req.user) === null || _c === void 0 ? void 0 : _c.name;
-        const userId = (_d = req.user) === null || _d === void 0 ? void 0 : _d._id;
+        const username = (_a = req.user) === null || _a === void 0 ? void 0 : _a.name;
+        const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b._id;
         const newEvent = yield Event_1.default.create(Object.assign(Object.assign({}, validatedData), { createdBy: userId, username: username }));
         res.status(201).json({ message: 'Event created successfully', event: newEvent });
     }
