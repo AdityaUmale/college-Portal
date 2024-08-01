@@ -12,7 +12,7 @@ interface ClubComponentProps {
   description: string;
   strength: number;
   createdBy: string;
-  clubHead: string;
+  clubHeads: { _id: string; name: string }[];
   username: string;
   members: { _id: string; name: string }[];
   pendingRequests: { _id: { _id: string; name: string }; name: string }[];
@@ -23,7 +23,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   name,
   description,
   strength,
-  clubHead,
+  clubHeads,
   username,
   members,
   pendingRequests = [],
@@ -121,29 +121,31 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
     }
   };
 
-  const assignClubHead = (userId: string) => {
-    axiosInstance
-      .post(`/club/${id}/assign-head/${userId}`)
-      .then((response) => {
-        console.log("Club head assigned successfully:", response.data);
-        // Update local state
-        setClub((oldClubs) => {
-          return oldClubs.map((club) => {
-            if (club._id === id) {
-              return {
-                ...club,
-                clubHead: userId,
-              };
-            }
-            return club;
-          });
-        });
-      })
-      .catch((error) => {
-        console.error("Error assigning club head:", error);
-      });
-  };
+  const isStaffOrClubHead =
+    clubHeads?.some((head) => head._id === userId) || userRole === "staff";
 
+    const assignClubHead = (userId: string) => {
+      axiosInstance
+        .post(`/club/${id}/assign-head/${userId}`)
+        .then((response) => {
+          console.log("Club head assigned successfully:", response.data);
+          // Update local state
+          setClub((oldClubs) => {
+            return oldClubs.map((club) => {
+              if (club._id === id) {
+                return {
+                  ...club,
+                  clubHeads: response.data.clubHeads,
+                };
+              }
+              return club;
+            });
+          });
+        })
+        .catch((error) => {
+          console.error("Error assigning club head:", error);
+        });
+    };
   const removeMember = (userId: string) => {
     axiosInstance
       .post(`/club/${id}/remove-member/${userId}`)
@@ -154,6 +156,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
               return {
                 ...club,
                 members: club.members.filter((member) => member._id !== userId),
+                clubHeads: club.clubHeads.filter((head) => head._id !== userId),
                 strength: club.strength - 1,
               };
             }
@@ -167,8 +170,6 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       });
   };
 
-  const isStaffOrClubHead = clubHead === userId || userRole === "staff";
-
   return (
     <div
       className={`border hover:border-gray-500 ${
@@ -178,7 +179,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       } gap-2 border-gray-300 flex flex-col items-start rounded-lg p-4 mb-4`}
     >
       <h2 className="text-2xl font-semibold mb-2">
-        {name} {clubHead === userId && "(Your Club)"}
+        {name} {clubHeads?.some((head) => head._id === userId) && "(Your Club)"}
         {!isStaffOrClubHead &&
           user.clubs.includes(name) &&
           "(You are a member)"}
@@ -210,17 +211,20 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
             {members.map((member) => (
               <li key={member._id}>
                 {member.name}
-                {(userRole === "staff" || userId === clubHead)  && clubHead !== member._id && (
-                  <Button
-                    onClick={() => assignClubHead(member._id)}
-                    variant="outline"
-                    className="ml-2"
-                  >
-                    Make Club Head
-                  </Button>
-                )}
-                {(userRole === "staff" || userId === clubHead) &&
-                  clubHead !== member._id && (
+                {(userRole === "staff" ||
+                  clubHeads.some((head) => head._id === userId)) &&
+                  !clubHeads?.some((head) => head._id === member._id) && (
+                    <Button
+                      onClick={() => assignClubHead(member._id)}
+                      variant="outline"
+                      className="ml-2"
+                    >
+                      Make Club Head
+                    </Button>
+                  )}
+                {(userRole === "staff" ||
+                  clubHeads.some((head) => head._id === userId)) &&
+                  !clubHeads?.some((head) => head._id === member._id) && (
                     <Button
                       onClick={() => removeMember(member._id)}
                       variant="destructive"
@@ -229,7 +233,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
                       Remove
                     </Button>
                   )}
-                {clubHead === member._id && (
+                {clubHeads?.some(head => head._id === member._id) && (
                   <span className="ml-2 text-green-500">(Club Head)</span>
                 )}
               </li>

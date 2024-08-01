@@ -11,10 +11,10 @@ const clubSchema = new Schema({
         type: Number,
         default: 1
     },
-    clubHead: {
+    clubHeads: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
-    },
+    }],
     username: String,
     members: [{
         type: Schema.Types.ObjectId,

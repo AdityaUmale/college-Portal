@@ -9,7 +9,10 @@ interface AuthenticatedRequest extends Request {
 
 export const getAllClubs = async (req: Request, res: Response, next: Function) => {
     try {
-        const clubs = await Club.find().populate('members', 'name').populate('pendingRequests._id', 'name');
+        const clubs = await Club.find()
+        .populate('members', 'name')
+        .populate('pendingRequests._id', 'name')
+        .populate('clubHeads', 'name');
         if (!clubs || clubs.length === 0) {
             return res.status(404).json({ message: 'No clubs found' });
         }
@@ -90,7 +93,7 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
         }
         console.log('Club pending requests:', JSON.stringify(club.pendingRequests));
       
-      if (req.user?.role !== "staff" && req.user?._id.toString() !== club.clubHead?.toString()) {
+      if (req.user?.role !== "staff" && req.user?._id.toString() !== club.clubHeads?.toString()) {
         return res.status(403).json({ message: 'You are not authorized to accept club requests' });
       }
       
@@ -150,18 +153,21 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
 
   export const assignClubHead = async (req: AuthenticatedRequest, res: Response, next: Function) => {
     try {
-        const { userId } = req.params;
-        const clubId = req.params.id;
-        const club = await Club.findById(clubId);
-      if (req.user?.role !== "staff" && req.user?._id.toString() !== club?.clubHead?.toString()  && req.user?._id.toString() !== clubId) {
-        return res.status(403).json({ message: 'Not authorized to assign club head' });
-      }
+      const { userId } = req.params;
+      const clubId = req.params.id;
+      const club = await Club.findById(clubId);
       if (!club) {
         return res.status(404).json({ message: 'Club not found' });
       }
-      club.clubHead = new mongoose.Types.ObjectId(userId);
-      await club.save();
-      res.json({ message: 'Club head assigned successfully' });
+      if (req.user?.role !== "staff" && !club.clubHeads.some(head => head.toString() === req.user?._id)) {
+        return res.status(403).json({ message: 'Not authorized to assign club head' });
+      }
+      if (!club.clubHeads.some(head => head.toString() === userId)) {
+        club.clubHeads.push(new mongoose.Types.ObjectId(userId));
+        await club.save();
+      }
+      const updatedClub = await Club.findById(clubId).populate('clubHeads', 'name');
+      res.json({ message: 'Club head assigned successfully', clubHeads: updatedClub?.clubHeads });
     } catch (error) {
       next(error);
     }
@@ -175,10 +181,11 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       if (!club) {
         return res.status(404).json({ message: 'Club not found' });
       }
-      if (req.user?.role !== "staff" && req.user?._id.toString() !== club.clubHead?.toString()) {
+      if (req.user?.role !== "staff" && !club.clubHeads.some(head => head.toString() === req.user?._id)) {
         return res.status(403).json({ message: 'Not authorized to remove members' });
       }
       club.members = club.members.filter(member => member.toString() !== userId);
+      club.clubHeads = club.clubHeads.filter(head => head.toString() !== userId);
       await club.save();
       await User.findByIdAndUpdate(userId, { $pull: { clubs: club.name } });
       res.json({ message: 'Member removed successfully' });

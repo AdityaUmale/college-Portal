@@ -51,7 +51,7 @@ export default function Clubs() {
           description={club.description}
           createdBy={club.createdBy}
           strength={club.strength}
-          clubHead={club.clubHead}
+          clubHeads={club.clubHeads}
           username={club.username}
           members={club.members}
           pendingRequests={club.pendingRequests}

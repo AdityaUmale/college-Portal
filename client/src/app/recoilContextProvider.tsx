@@ -31,7 +31,7 @@ export interface Club {
   description: string;
   createdBy: string;
   strength: number;
-  clubHead: string;
+  clubHeads: { _id: string; name: string }[];
   username: string;
   members: { _id: string; name: string }[];
   pendingRequests: { _id: { _id: string; name: string }; name: string }[];
