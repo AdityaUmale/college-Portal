@@ -193,3 +193,23 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       next(error);
     }
   };
+
+  export const removeClubHead = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const { userId } = req.params;
+      const clubId = req.params.id;
+      const club = await Club.findById(clubId);
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+      if (req.user?.role !== "staff") {
+        return res.status(403).json({ message: 'Not authorized to remove club head' });
+      }
+      club.clubHeads = club.clubHeads.filter(head => head.toString() !== userId);
+      await club.save();
+      const updatedClub = await Club.findById(clubId).populate('clubHeads', 'name');
+      res.json({ message: 'Club head removed successfully', clubHeads: updatedClub?.clubHeads });
+    } catch (error) {
+      next(error);
+    }
+  };

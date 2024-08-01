@@ -124,28 +124,28 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   const isStaffOrClubHead =
     clubHeads?.some((head) => head._id === userId) || userRole === "staff";
 
-    const assignClubHead = (userId: string) => {
-      axiosInstance
-        .post(`/club/${id}/assign-head/${userId}`)
-        .then((response) => {
-          console.log("Club head assigned successfully:", response.data);
-          // Update local state
-          setClub((oldClubs) => {
-            return oldClubs.map((club) => {
-              if (club._id === id) {
-                return {
-                  ...club,
-                  clubHeads: response.data.clubHeads,
-                };
-              }
-              return club;
-            });
+  const assignClubHead = (userId: string) => {
+    axiosInstance
+      .post(`/club/${id}/assign-head/${userId}`)
+      .then((response) => {
+        console.log("Club head assigned successfully:", response.data);
+        // Update local state
+        setClub((oldClubs) => {
+          return oldClubs.map((club) => {
+            if (club._id === id) {
+              return {
+                ...club,
+                clubHeads: response.data.clubHeads,
+              };
+            }
+            return club;
           });
-        })
-        .catch((error) => {
-          console.error("Error assigning club head:", error);
         });
-    };
+      })
+      .catch((error) => {
+        console.error("Error assigning club head:", error);
+      });
+  };
   const removeMember = (userId: string) => {
     axiosInstance
       .post(`/club/${id}/remove-member/${userId}`)
@@ -167,6 +167,29 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       })
       .catch((error) => {
         console.error("Error removing member:", error);
+      });
+  };
+
+  const removeClubHead = (userId: string) => {
+    axiosInstance
+      .post(`/club/${id}/remove-head/${userId}`)
+      .then((response) => {
+        console.log("Club head removed successfully:", response.data);
+        // Update local state
+        setClub((oldClubs) => {
+          return oldClubs.map((club) => {
+            if (club._id === id) {
+              return {
+                ...club,
+                clubHeads: response.data.clubHeads,
+              };
+            }
+            return club;
+          });
+        });
+      })
+      .catch((error) => {
+        console.error("Error removing club head:", error);
       });
   };
 
@@ -222,6 +245,17 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
                       Make Club Head
                     </Button>
                   )}
+                {userRole === "staff" &&
+                  clubHeads?.some((head) => head._id === member._id) && (
+                    <Button
+                      onClick={() => removeClubHead(member._id)}
+                      variant="outline"
+                      className="ml-2"
+                    >
+                      Remove Club Head
+                    </Button>
+                  )}
+
                 {(userRole === "staff" ||
                   clubHeads.some((head) => head._id === userId)) &&
                   !clubHeads?.some((head) => head._id === member._id) && (
@@ -233,7 +267,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
                       Remove
                     </Button>
                   )}
-                {clubHeads?.some(head => head._id === member._id) && (
+                {clubHeads?.some((head) => head._id === member._id) && (
                   <span className="ml-2 text-green-500">(Club Head)</span>
                 )}
               </li>
