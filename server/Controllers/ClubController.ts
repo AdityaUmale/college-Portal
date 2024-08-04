@@ -213,3 +213,24 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       next(error);
     }
   };
+
+  export const revertClubApplication = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const clubId = req.params.id;
+      const userId = req.user?._id;
+  
+      const club = await Club.findById(clubId);
+      if (!club) {
+        return res.status(404).json({ message: 'Club not found' });
+      }
+  
+      // Use the pull method to remove the matching request
+      club.pendingRequests.pull({ _id: userId });
+  
+      await club.save();
+  
+      res.json({ message: 'Club application reverted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };

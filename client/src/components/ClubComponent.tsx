@@ -30,6 +30,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
 }) => {
   const [showMore, setShowMore] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
 
   const toggleDescription = () => {
     setShowMore(!showMore);
@@ -44,23 +45,30 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   };
 
   const applyClub = () => {
-    axiosInstance.post(`/club/apply/${id}`).then((response) => {
-      setClub((oldClubs) => {
-        const newClubs = oldClubs.map((club) => {
-          if (club._id === id) {
-            return {
-              ...club,
-              pendingRequests: [
-                ...club.pendingRequests,
-                { _id: { _id: user._id, name: user.name }, name: user.name },
-              ],
-            };
-          }
-          return club;
+    axiosInstance.post(`/club/apply/${id}`)
+      .then((response) => {
+        setClub((oldClubs) => {
+          const newClubs = oldClubs.map((club) => {
+            if (club._id === id) {
+              return {
+                ...club,
+                pendingRequests: [
+                  ...club.pendingRequests,
+                  { _id: { _id: user._id, name: user.name }, name: user.name },
+                ],
+              };
+            }
+            return club;
+          });
+          return newClubs;
         });
-        return newClubs;
+      })
+      .catch((error) => {
+        console.error("Error applying to club:", error);
+      })
+      .finally(() => {
+        setIsApplying(false);
       });
-    });
   };
 
   const acceptRequest = (request: {
@@ -193,6 +201,38 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       });
   };
 
+  const toggleClubApplication = () => {
+    setIsApplying(true);
+    if (pendingRequests.some((req) => req._id._id === userId)) {
+      // Revert application
+      axiosInstance.post(`/club/revert-application/${id}`)
+        .then(() => {
+          setClub((oldClubs) => {
+            return oldClubs.map((club) => {
+              if (club._id === id) {
+                return {
+                  ...club,
+                  pendingRequests: club.pendingRequests.filter(
+                    (req) => req._id._id !== userId
+                  ),
+                };
+              }
+              return club;
+            });
+          });
+        })
+        .catch((error) => {
+          console.error("Error reverting application:", error);
+        })
+        .finally(() => {
+          setIsApplying(false);
+        });
+    } else {
+      // Apply to club
+      applyClub();
+    }
+  };
+
   return (
     <div
       className={`border hover:border-gray-500 ${
@@ -303,14 +343,16 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
       )}
       {userRole === "user" && !user.clubs.includes(name) && (
         <Button
-          onClick={applyClub}
+          onClick={toggleClubApplication}
           variant="default"
-          disabled={pendingRequests.some((req) => req._id._id === userId)}
+          disabled={isApplying}
           className="mt-2"
         >
-          {pendingRequests.some((req) => req._id._id === userId)
-            ? "Request Pending"
-            : "Apply"}
+          {isApplying
+            ?"processing..."
+            :pendingRequests.some((req) => req._id._id === userId)
+            ? "Revert Application"
+            :"Apply"}
         </Button>
       )}
     </div>
