@@ -7,9 +7,11 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="flex h-screen w-full">
       <Sidebar />
-      {children}
-    </>
+      <div className="flex-1 overflow-x-hidden overflow-y-auto">
+        {children}
+      </div>
+    </div>
   );
 }

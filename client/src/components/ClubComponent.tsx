@@ -1,4 +1,4 @@
-import { clubsState, userState } from "@/app/recoilContextProvider";
+import { Club, clubsState, userState } from "@/app/recoilContextProvider";
 import React, { useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ interface ClubComponentProps {
   username: string;
   members: { _id: string; name: string }[];
   pendingRequests: { _id: { _id: string; name: string }; name: string }[];
+  updateClub: (updatedClub: Club) => void;
 }
 
 const ClubComponent: React.FC<ClubComponentProps> = ({
@@ -27,6 +28,7 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
   username,
   members,
   pendingRequests = [],
+  updateClub,
 }) => {
   const [showMore, setShowMore] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
@@ -144,6 +146,11 @@ const ClubComponent: React.FC<ClubComponentProps> = ({
               return {
                 ...club,
                 clubHeads: response.data.clubHeads,
+                members: club.members.map(member =>
+                  member._id === userId
+                  ? { ...member, isClubHead: true}
+                  : member
+                )
               };
             }
             return club;

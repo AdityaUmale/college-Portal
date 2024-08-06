@@ -1,7 +1,6 @@
 "use client";
 
 import axiosInstance from "@/axiosInstance";
-import ClubComponent from "@/components/ClubComponent";
 import ListWrapper from "@/components/ListWrapper";
 import { ClubForm } from "@/components/forms/ClubForm";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,11 +8,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Club, clubsState } from "../../recoilContextProvider";
 import { useRecoilState } from "recoil";
+import Link from "next/link";
 
 export default function Clubs() {
   const { toast } = useToast();
   const [clubs, setClubs] = useRecoilState(clubsState);
   const router = useRouter();
+
   useEffect(() => {
     axiosInstance
       .get("/club")
@@ -42,22 +43,18 @@ export default function Clubs() {
     );
   }
   return (
+    <div className="p-4 w-full">
     <ListWrapper heading="Clubs" form={<ClubForm />}>
       {clubs.map((club, index) => (
-        <ClubComponent
-          key={index}
-          id={club._id}
-          name={club.name}
-          description={club.description}
-          createdBy={club.createdBy}
-          strength={club.strength}
-          clubHeads={club.clubHeads}
-          username={club.username}
-          members={club.members}
-          pendingRequests={club.pendingRequests}
-        />
+        <Link href={`/dashboard/clubs/${club._id}`} key={club._id} >
+        <div className="border p-4 mb-4 rounded hover:bg-gray-100">
+            <h2 className="text-2xl font-semibold">{club.name}</h2>
+            <p>{club.description.substring(0, 100)}...</p>
+          </div>
+        </Link>
       ))}
     </ListWrapper>
+    </div>
   );
 }
 

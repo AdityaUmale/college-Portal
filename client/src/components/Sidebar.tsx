@@ -23,10 +23,13 @@ const allowedPaths = [
   "/dashboard/announcements",
   "/dashboard/clubs",
   "https://roadmap.sh",
+  "/dashboard/pyqs",
 ];
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  if (!allowedPaths.includes(pathname)) return null;
+  const isAllowedPath = allowedPaths.some(path => pathname.startsWith(path));
+  
+  if (!isAllowedPath) return null;
   return (
     <div className="bg-gray-800 flex-shrink-0 h-screen flex flex-col justify-between items-center text-white w-64">
       <h1 className="text-3xl border-white border-2 rounded-xl p-3 m-3 font-semibold">
