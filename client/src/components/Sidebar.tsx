@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import SidebarUserInfo from "./SidebarUserInfo";
-import { CalendarCheck, RadioTower, Users, Route, Layers3  } from "lucide-react";
+import { CalendarCheck, RadioTower, Users, Route, Layers3, School  } from "lucide-react";
 
 const navlinks = [
   { id: 1, icon: <CalendarCheck />, name: "Events", path: "/dashboard" },
@@ -17,6 +17,7 @@ const navlinks = [
   { id: 3, icon: <Users />, name: "Clubs", path: "/dashboard/clubs" },
   { id: 4, icon: <Route />, name: "Roadmaps", path: "https://roadmap.sh" },
   { id: 5, icon: <Layers3 />, name: "PYQ's", path: "/dashboard/pyqs" },
+  { id: 6, icon: <School />, name: "ClassRoom", path: "/dashboard/classroom" },
 ];
 const allowedPaths = [
   "/dashboard",
@@ -24,6 +25,7 @@ const allowedPaths = [
   "/dashboard/clubs",
   "https://roadmap.sh",
   "/dashboard/pyqs",
+  "/dashboard/classroom",
 ];
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
