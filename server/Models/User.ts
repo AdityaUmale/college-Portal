@@ -11,6 +11,10 @@ const userSchema = new Schema({
   clubs: {
     type: [String],
     default: []
+  },
+  classrooms: {
+    type: [String],
+    default: []
   }
 });
 

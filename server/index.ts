@@ -8,6 +8,7 @@ import { eventRouter } from './Routes/EventRoutes'
 import { announcementRouter } from './Routes/AnnouncementRoutes'
 import { isLoggedIn } from './middlewares/isLoggedIn'
 import { ClubRouter } from './Routes/ClubRouter'
+import { ClassroomRouter } from './Routes/ClassroomRouter'
 const app = express()
 app.use(cors())
 app.use(bodyparser.json())
@@ -17,6 +18,7 @@ app.use(isLoggedIn)
 app.use('/api/v1/event', eventRouter)
 app.use('/api/v1/announcement', announcementRouter)
 app.use('/api/v1/club', ClubRouter)
+app.use('/api/v1/classroom', ClassroomRouter)
 
 app.use(
   (

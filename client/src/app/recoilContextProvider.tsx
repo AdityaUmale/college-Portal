@@ -9,6 +9,7 @@ export interface User {
   email: string;
   role: string;
   clubs: string[];
+  classrooms: string[];
   password: string;
 }
 export interface Event {
@@ -36,6 +37,16 @@ export interface Club {
   members: { _id: string; name: string }[];
   pendingRequests: { _id: { _id: string; name: string }; name: string }[];
 }
+export interface Classroom {
+  _id: string;
+  name: string;
+  description: string;
+  createdBy: string;
+  strength: number;
+  username: string;
+  members: { _id: string; name: string }[];
+  pendingRequests: { _id: { _id: string; name: string }; name: string }[];
+}
 export const userState = atom<User>({
   key: "userState",
   default: {
@@ -44,6 +55,7 @@ export const userState = atom<User>({
     email: "",
     role: "",
     clubs: [],
+    classrooms: [],
     password: "",
   },
   effects_UNSTABLE: [persistAtom],
@@ -56,6 +68,11 @@ export const eventsState = atom<Event[]>({
 });
 export const clubsState = atom<Club[]>({
   key: "clubsState",
+  default: [],
+  effects_UNSTABLE: [persistAtom],
+});
+export const classroomState = atom<Classroom[]>({
+  key: "classroomState",
   default: [],
   effects_UNSTABLE: [persistAtom],
 });
