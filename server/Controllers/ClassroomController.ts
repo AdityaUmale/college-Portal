@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import User from '../Models/User';
 import mongoose, { Schema } from 'mongoose';
-import Classroom from '../Models/ClassRoom';
-import { ClassroomSchema } from '../Schema/classroomSchema';
+import Classroom from '../Models/Classroom';
+import { ClassroomSchema } from '../Schema/ClassroomSchema';
+import  { IPost, IClassroom } from '../Models/Classroom';
+
 interface AuthenticatedRequest extends Request {
     user?: { _id: string; role: string, email: string, classrooms: string[], name: string };
 }
+
 
 export const getAllClassrooms = async (req: Request, res: Response, next: Function) => {
     try {
@@ -54,7 +57,7 @@ export const applyClassroom = async (req: AuthenticatedRequest, res: Response, n
           if (classroom.pendingRequests.some(request => request._id && request._id.toString() === userToBeUpdated._id.toString())) {
             return res.status(400).json({ message: 'User has already requested to join this classroom' });
           }
-          classroom.pendingRequests.push({ _id: userToBeUpdated._id, name: userToBeUpdated.name });
+          classroom.pendingRequests.push({ _id: userToBeUpdated._id, name: userToBeUpdated.name ?? '' });
           await classroom.save();
           
           res.json({ message: 'Classroom join request sent successfully' });
@@ -180,7 +183,7 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       }
   
       // Use the pull method to remove the matching request
-      classroom.pendingRequests.pull({ _id: userId });
+      classroom.pendingRequests = classroom.pendingRequests.filter(request => request._id.toString() !== userId);
   
       await classroom.save();
   
@@ -189,3 +192,83 @@ export const getClubMembers = async (req: Request, res: Response, next: Function
       next(error);
     }
   };
+
+
+  export const createPost = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const { id } = req.params;
+      const { content } = req.body;
+      const userId = req.user?._id;
+  
+      const classroom = await Classroom.findById(id);
+      if (!classroom) {
+        return res.status(404).json({ message: 'Classroom not found' });
+      }
+  
+      const newPost: IPost = {
+        _id: new mongoose.Types.ObjectId(),
+        content,
+        createdBy: userId ?? new mongoose.Types.ObjectId(), // Provide a default ObjectId if userId is undefined
+        createdAt: new Date()
+      };
+  
+      // Push the new post to the posts array
+      if (!Array.isArray(classroom.posts)) {
+        classroom.posts = [];
+      }
+      classroom.posts.push(newPost);
+      await classroom.save();
+  
+      res.status(201).json(newPost);
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  export const deletePost = async (req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const { id, postId } = req.params;
+      const userId = req.user?._id;
+  
+      if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+  
+      const classroom = await Classroom.findById(id);
+      if (!classroom) {
+        return res.status(404).json({ message: 'Classroom not found' });
+      }
+  
+      const initialLength = classroom.posts.length;
+      classroom.posts = classroom.posts.filter(post => 
+        !(post._id.toString() === postId && post.createdBy.toString() === userId.toString())
+      );
+  
+      if (classroom.posts.length === initialLength) {
+        return res.status(404).json({ message: 'Post not found or you are not authorized to delete this post' });
+      }
+  
+      await classroom.save();
+      res.json({ message: 'Post deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export const getAllPosts = async(req: AuthenticatedRequest, res: Response, next: Function) => {
+    try {
+      const { id } = req.params;
+      const classroom = await Classroom.findById(id).populate({
+        path: 'posts.createdBy',
+        select: 'name'
+      });
+      if (!classroom) {
+        return res.status(404).json({ message: 'Classroom not found' });
+      }
+      res.json(classroom.posts);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  

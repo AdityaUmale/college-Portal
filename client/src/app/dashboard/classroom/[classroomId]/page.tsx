@@ -5,7 +5,13 @@ import { classroomState, Classroom } from "../../../recoilContextProvider";
 import axiosInstance from "@/axiosInstance";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import ClassroomComponent from "@/components/ClassroomComponent";
+import dynamic from 'next/dynamic'
+
+const ClassroomComponent = dynamic(() => import('@/components/ClassroomComponent'), {
+  ssr: false,
+})
+
+
 
 export default function ClassroomPage({ params }: { params: { classroomId: string } }) {
   const { classroomId } = params;

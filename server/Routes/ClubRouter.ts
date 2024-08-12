@@ -3,7 +3,9 @@ import { verifyStaff } from '../middlewares/staffVerify'
 import { acceptClubRequest, applyClub, assignClubHead, createClub, deleteClub, getAllClubs, getClubMembers, removeClubHead, removeMember, revertClubApplication } from '../Controllers/ClubController'
 
 
+
 const ClubRouter = express.Router()
+
 
 ClubRouter.route("/").get(getAllClubs)
 ClubRouter.route("/apply/:id").post(applyClub)
@@ -14,6 +16,7 @@ ClubRouter.route('/:id').delete(deleteClub)
 ClubRouter.route('/:id/remove-member/:userId').post(removeMember)
 ClubRouter.route('/:id/assign-head/:userId').post(assignClubHead)
 ClubRouter.route('/:id/remove-head/:userId').post(removeClubHead)
-ClubRouter.route("/revert-application/:id").post(revertClubApplication)
+
+
 
 export { ClubRouter }
