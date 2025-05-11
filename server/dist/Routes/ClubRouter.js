@@ -17,3 +17,4 @@ ClubRouter.route('/accept-request/:id/:userId').post(ClubController_1.acceptClub
 ClubRouter.route('/:id').delete(ClubController_1.deleteClub);
 ClubRouter.route('/:id/remove-member/:userId').post(ClubController_1.removeMember);
 ClubRouter.route('/:id/assign-head/:userId').post(ClubController_1.assignClubHead);
+ClubRouter.route('/:id/remove-head/:userId').post(ClubController_1.removeClubHead);

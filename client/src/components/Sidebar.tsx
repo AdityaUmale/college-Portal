@@ -16,8 +16,6 @@ const navlinks = [
   },
   { id: 3, icon: <Users />, name: "Clubs", path: "/dashboard/clubs" },
   { id: 4, icon: <Route />, name: "Roadmaps", path: "https://roadmap.sh" },
-  { id: 5, icon: <Layers3 />, name: "PYQ's", path: "/dashboard/pyqs" },
-  { id: 6, icon: <School />, name: "ClassRoom", path: "/dashboard/classroom" },
 ];
 const allowedPaths = [
   "/dashboard",

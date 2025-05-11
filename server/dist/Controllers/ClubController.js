@@ -12,14 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeMember = exports.assignClubHead = exports.deleteClub = exports.acceptClubRequest = exports.getClubMembers = exports.applyClub = exports.createClub = exports.getAllClubs = void 0;
+exports.revertClubApplication = exports.removeClubHead = exports.removeMember = exports.assignClubHead = exports.deleteClub = exports.acceptClubRequest = exports.getClubMembers = exports.applyClub = exports.createClub = exports.getAllClubs = void 0;
 const Club_1 = __importDefault(require("../Models/Club"));
 const ClubSchema_1 = require("../Schema/ClubSchema");
 const User_1 = __importDefault(require("../Models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const getAllClubs = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const clubs = yield Club_1.default.find().populate('members', 'name').populate('pendingRequests._id', 'name');
+        const clubs = yield Club_1.default.find()
+            .populate('members', 'name')
+            .populate('pendingRequests._id', 'name')
+            .populate('clubHeads', 'name');
         if (!clubs || clubs.length === 0) {
             return res.status(404).json({ message: 'No clubs found' });
         }
@@ -103,7 +106,7 @@ const acceptClubRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, 
             return res.status(404).json({ message: 'Club not found' });
         }
         console.log('Club pending requests:', JSON.stringify(club.pendingRequests));
-        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && ((_b = req.user) === null || _b === void 0 ? void 0 : _b._id.toString()) !== ((_c = club.clubHead) === null || _c === void 0 ? void 0 : _c.toString())) {
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && ((_b = req.user) === null || _b === void 0 ? void 0 : _b._id.toString()) !== ((_c = club.clubHeads) === null || _c === void 0 ? void 0 : _c.toString())) {
             return res.status(403).json({ message: 'You are not authorized to accept club requests' });
         }
         const pendingRequestIndex = club.pendingRequests.findIndex(request => request._id && request._id.toString() === userId);
@@ -153,19 +156,23 @@ const deleteClub = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.deleteClub = deleteClub;
 const assignClubHead = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     try {
-        const { clubId, userId } = req.params;
-        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && ((_b = req.user) === null || _b === void 0 ? void 0 : _b._id.toString()) !== clubId) {
-            return res.status(403).json({ message: 'Not authorized to assign club head' });
-        }
+        const { userId } = req.params;
+        const clubId = req.params.id;
         const club = yield Club_1.default.findById(clubId);
         if (!club) {
             return res.status(404).json({ message: 'Club not found' });
         }
-        club.clubHead = new mongoose_1.default.Types.ObjectId(userId);
-        yield club.save();
-        res.json({ message: 'Club head assigned successfully' });
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && !club.clubHeads.some(head => { var _a; return head.toString() === ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id); })) {
+            return res.status(403).json({ message: 'Not authorized to assign club head' });
+        }
+        if (!club.clubHeads.some(head => head.toString() === userId)) {
+            club.clubHeads.push(new mongoose_1.default.Types.ObjectId(userId));
+            yield club.save();
+        }
+        const updatedClub = yield Club_1.default.findById(clubId).populate('clubHeads', 'name');
+        res.json({ message: 'Club head assigned successfully', clubHeads: updatedClub === null || updatedClub === void 0 ? void 0 : updatedClub.clubHeads });
     }
     catch (error) {
         next(error);
@@ -173,17 +180,19 @@ const assignClubHead = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.assignClubHead = assignClubHead;
 const removeMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a;
     try {
-        const { clubId, userId } = req.params;
+        const { userId } = req.params;
+        const clubId = req.params.id;
         const club = yield Club_1.default.findById(clubId);
         if (!club) {
             return res.status(404).json({ message: 'Club not found' });
         }
-        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && ((_b = req.user) === null || _b === void 0 ? void 0 : _b._id.toString()) !== ((_c = club.clubHead) === null || _c === void 0 ? void 0 : _c.toString())) {
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff" && !club.clubHeads.some(head => { var _a; return head.toString() === ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id); })) {
             return res.status(403).json({ message: 'Not authorized to remove members' });
         }
         club.members = club.members.filter(member => member.toString() !== userId);
+        club.clubHeads = club.clubHeads.filter(head => head.toString() !== userId);
         yield club.save();
         yield User_1.default.findByIdAndUpdate(userId, { $pull: { clubs: club.name } });
         res.json({ message: 'Member removed successfully' });
@@ -193,3 +202,44 @@ const removeMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.removeMember = removeMember;
+const removeClubHead = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { userId } = req.params;
+        const clubId = req.params.id;
+        const club = yield Club_1.default.findById(clubId);
+        if (!club) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "staff") {
+            return res.status(403).json({ message: 'Not authorized to remove club head' });
+        }
+        club.clubHeads = club.clubHeads.filter(head => head.toString() !== userId);
+        yield club.save();
+        const updatedClub = yield Club_1.default.findById(clubId).populate('clubHeads', 'name');
+        res.json({ message: 'Club head removed successfully', clubHeads: updatedClub === null || updatedClub === void 0 ? void 0 : updatedClub.clubHeads });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.removeClubHead = removeClubHead;
+const revertClubApplication = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const clubId = req.params.id;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        const club = yield Club_1.default.findById(clubId);
+        if (!club) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
+        // Use the pull method to remove the matching request
+        club.pendingRequests.pull({ _id: userId });
+        yield club.save();
+        res.json({ message: 'Club application reverted successfully' });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.revertClubApplication = revertClubApplication;

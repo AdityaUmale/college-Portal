@@ -35,6 +35,10 @@ const userSchema = new mongoose_1.Schema({
     clubs: {
         type: [String],
         default: []
+    },
+    classrooms: {
+        type: [String],
+        default: []
     }
 });
 const User = mongoose_1.default.model('User', userSchema);

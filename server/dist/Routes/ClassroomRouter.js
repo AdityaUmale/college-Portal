@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ClassroomRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const staffVerify_1 = require("../middlewares/staffVerify");
+const ClassroomController_1 = require("../Controllers/ClassroomController");
+const ClassroomRouter = express_1.default.Router();
+exports.ClassroomRouter = ClassroomRouter;
+ClassroomRouter.route("/").get(ClassroomController_1.getAllClassrooms);
+ClassroomRouter.route("/apply/:id").post(ClassroomController_1.applyClassroom);
+ClassroomRouter.route("/create").post(staffVerify_1.verifyStaff, ClassroomController_1.createClassroom);
+ClassroomRouter.route('/:id/members').get(ClassroomController_1.getAllClassrooms);
+ClassroomRouter.route('/accept-request/:id/:userId').post(ClassroomController_1.acceptClassroomRequest);
+ClassroomRouter.route('/:id').delete(ClassroomController_1.deleteClassroom);
+ClassroomRouter.route('/:id/remove-member/:userId').post(ClassroomController_1.removeClassroomMember);
+ClassroomRouter.route("/revert-application/:id").post(ClassroomController_1.revertClassroomApplication);
+ClassroomRouter.route("/revert-application/:id").post(ClassroomController_1.revertClassroomApplication);
+ClassroomRouter.route("/:id/posts/:userId").post(ClassroomController_1.createPost);
+ClassroomRouter.route("/:id/posts").get(ClassroomController_1.getAllPosts);
+ClassroomRouter.route("/:id/posts/:postId").delete(ClassroomController_1.deletePost);

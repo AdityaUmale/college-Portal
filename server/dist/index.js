@@ -22,6 +22,7 @@ const EventRoutes_1 = require("./Routes/EventRoutes");
 const AnnouncementRoutes_1 = require("./Routes/AnnouncementRoutes");
 const isLoggedIn_1 = require("./middlewares/isLoggedIn");
 const ClubRouter_1 = require("./Routes/ClubRouter");
+const ClassroomRouter_1 = require("./Routes/ClassroomRouter");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
@@ -30,6 +31,7 @@ app.use(isLoggedIn_1.isLoggedIn);
 app.use('/api/v1/event', EventRoutes_1.eventRouter);
 app.use('/api/v1/announcement', AnnouncementRoutes_1.announcementRouter);
 app.use('/api/v1/club', ClubRouter_1.ClubRouter);
+app.use('/api/v1/classroom', ClassroomRouter_1.ClassroomRouter);
 app.use((error, req, res, next) => {
     if (error) {
         res.status(500).send({ error: 'Internal Server Error' });

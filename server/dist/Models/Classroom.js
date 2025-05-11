@@ -24,7 +24,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const clubSchema = new mongoose_1.Schema({
+const PostSchema = new mongoose_1.Schema({
+    _id: { type: mongoose_1.Schema.Types.ObjectId, required: true },
+    content: { type: String, required: true },
+    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+const classroomSchema = new mongoose_1.Schema({
     name: {
         type: String,
         required: true,
@@ -35,10 +41,6 @@ const clubSchema = new mongoose_1.Schema({
         type: Number,
         default: 1
     },
-    clubHeads: [{
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'User'
-        }],
     username: String,
     members: [{
             type: mongoose_1.Schema.Types.ObjectId,
@@ -50,7 +52,8 @@ const clubSchema = new mongoose_1.Schema({
                 ref: 'User'
             },
             name: String
-        }]
+        }],
+    posts: [PostSchema]
 });
-const Club = mongoose_1.default.model('Club', clubSchema);
-exports.default = Club;
+const Classroom = mongoose_1.default.model('Classroom', classroomSchema);
+exports.default = Classroom;
